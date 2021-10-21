@@ -21,7 +21,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from datetime import date,datetime,timedelta
 import time
 # from googletrans import Translator
-from deep_translator import GoogleTranslator
+from deep_translator import MyMemoryTranslator
+import spacy
 
 
 from io import StringIO
@@ -91,25 +92,30 @@ def parse_pdf():
 def process_pdf(pages=None):
     text_full = ""
     pages = convert_from_path('C:/Users/punee/Legal_DDP/Downloads/record.pdf', 500, poppler_path='C:/Program Files (x86)/poppler-0.68.0/bin')
+    print(pages)
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
     print("Running OCR")
     for page in pages:
+        text_small = ""
         print("***new img***")
         page.save('out.jpg', 'JPEG')
-        im = Image.open("C:/Users/punee/Documents/GitHub/Scraping-Pipelines/out.jpg")
+        im = Image.open("C:/Users/punee/Documents/GitHub/Saral/out.jpg")
         text_small = pytesseract.image_to_string(im, lang = 'hin+eng')
         text_full = text_full + text_small
     print("Translating")
+    print(text_full)
     translated_full = ""
-    chunks = chunkstring(text_full,4000)
+    chunks = chunkstring(text_full,499)
     for chunk in chunks:
-        time.sleep(4)
         translated_chunk = ""
         print("***new chunk***")
         print(len(chunk))
-        translated_chunk = GoogleTranslator(source='auto', target='en').translate(chunk)
+        translated_chunk = MyMemoryTranslator(source='auto', target='en').translate(chunk)
         translated_full = translated_full + translated_chunk
+        print(len(translated_full))
+        time.sleep(120)
     text_full = translated_full
+    print(translated_full)
     f = codecs.open('bla.txt', encoding='utf-8', mode='w')
     f.write(text_full)
     f.close()
@@ -145,7 +151,6 @@ def parse_paginated_table(max_records):
         shutil.move(filename,os.path.join(Initial_path,r"record.pdf"))
         print("Downloaded")
         text = process_pdf()
-        print(text)
         print("record#" + str(records_processed))
 
 
