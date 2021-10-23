@@ -6,10 +6,6 @@
 #Detect language and translate. 
 
 from selenium import webdriver
-import datefinder
-import re
-import string   
-import requests
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -19,19 +15,14 @@ from selenium.webdriver.support.expected_conditions import presence_of_all_eleme
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from datetime import date,datetime,timedelta
-import time
-# from googletrans import Translator
 from deep_translator import MyMemoryTranslator
-import spacy
-
-
 from io import StringIO
+from PIL import Image
+from pdf2image import convert_from_path
+import time
 import os
 import shutil
-
-from PIL import Image
 import pytesseract
-from pdf2image import convert_from_path
 import codecs
 
 class ReportDoc:
@@ -80,16 +71,10 @@ options.add_experimental_option('prefs', prefs)
 PATH = "C:/Users/punee/Legal_DDP/chromedriver"
 driver = webdriver.Chrome(PATH,chrome_options=options)
 
-def download_pdf():
-    pass
-
 def chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
-def parse_pdf():
-    pass
-
-def process_pdf(pages=None):
+def pdf_to_text(pages=None):
     text_full = ""
     pages = convert_from_path('C:/Users/punee/Legal_DDP/Downloads/record.pdf', 500, poppler_path='C:/Program Files (x86)/poppler-0.68.0/bin')
     print(pages)
@@ -102,6 +87,9 @@ def process_pdf(pages=None):
         im = Image.open("C:/Users/punee/Documents/GitHub/Saral/out.jpg")
         text_small = pytesseract.image_to_string(im, lang = 'hin+eng')
         text_full = text_full + text_small
+    return (text_full)
+
+def translate_text(text_full):   
     print("Translating")
     print(text_full)
     translated_full = ""
@@ -123,42 +111,10 @@ def process_pdf(pages=None):
     file1.seek(0)
     return text_full
 
-def parse_paginated_table(max_records):
-    records_processed = 0
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".lightrow td"))).click()
-    records = driver.find_elements_by_css_selector('#tblDisplayRecords a')
-    for record in records:
-        record.click()
-        original_table_handle = driver.window_handles[-2]
-        driver.switch_to_window(driver.window_handles[-1])
-        time.sleep(2)
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#RptView_ctl06_ctl04_ctl00"))).click()
-        download = driver.find_element_by_css_selector("#RptView_ctl06_ctl04_ctl00")
-        download.click()
-        time.sleep(2)
-        print("Downloading")
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@id='RptView_ctl06_ctl04_ctl00_Menu']/div[1]/a"))).click()
-        download_2 = driver.find_element_by_xpath("//*[@id='RptView_ctl06_ctl04_ctl00_Menu']/div[1]/a")
-        try:
-            download_2.click()
-        except:
-            pass
-        driver.switch_to_window(original_table_handle)
-        records_processed = records_processed + 1
-        time.sleep(2)
-        Initial_path = r"C:\\Users\\punee\\Legal_DDP\\Downloads"
-        filename = max([Initial_path + "\\" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
-        shutil.move(filename,os.path.join(Initial_path,r"record.pdf"))
-        print("Downloaded")
-        text = process_pdf()
-        print("record#" + str(records_processed))
-
-
 driver.get("https://haryanapolice.gov.in/ViewFIR/FIRStatusSearch?From=LFhlihlx/W49VSlBvdGc4w==")
 year_parse = "2019"
 district = "BHIWANI"
 police_station = "LOHARU"
-max_records = 5
 print("Scraping")
 select = Select(driver.find_element_by_xpath("//*[@id='ContentPlaceHolder1_ddFIRYear']"))
 select.select_by_value(year_parse)
@@ -167,6 +123,34 @@ select.select_by_visible_text(district)
 select = Select(driver.find_element_by_xpath("//*[@id='ContentPlaceHolder1_ddlPoliceStation']"))
 select.select_by_visible_text(police_station)
 driver.find_element_by_css_selector('#ContentPlaceHolder1_btnStatusSearch').click()
-parse_paginated_table(max_records)
-# driver.quit()
+records_processed = 0
+WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".lightrow td"))).click()
+records = driver.find_elements_by_css_selector('#tblDisplayRecords a')
+for record in records:
+    record.click()
+    original_table_handle = driver.window_handles[-2]
+    driver.switch_to_window(driver.window_handles[-1])
+    time.sleep(2)
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#RptView_ctl06_ctl04_ctl00"))).click()
+    download = driver.find_element_by_css_selector("#RptView_ctl06_ctl04_ctl00")
+    download.click()
+    time.sleep(2)
+    print("Downloading")
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@id='RptView_ctl06_ctl04_ctl00_Menu']/div[1]/a"))).click()
+    download_2 = driver.find_element_by_xpath("//*[@id='RptView_ctl06_ctl04_ctl00_Menu']/div[1]/a")
+    try:
+        download_2.click()
+    except:
+        pass
+    driver.switch_to_window(original_table_handle)
+    records_processed = records_processed + 1
+    time.sleep(2)
+    Initial_path = r"C:\\Users\\punee\\Legal_DDP\\Downloads"
+    filename = max([Initial_path + "\\" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+    shutil.move(filename,os.path.join(Initial_path,r"record.pdf"))
+    print("Downloaded")
+    text = pdf_to_text()
+    translated_text = translate_text(text)
+    print("record#" + str(records_processed))
+driver.quit()
 

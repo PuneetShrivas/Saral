@@ -69,11 +69,11 @@ class CaseDoc:
         text = self.judgement_text.replace('>>>>','')
         doc_nlp = nlp(text)
         self.case_id = case_get_case_id(text, doc_nlp)
-        # self.cases_cited = case_get_cases_list(text, doc_nlp)
-        # self.provisions_referred = case_get_acts_list(text, doc_nlp)
-        # self.petitioner_counsel = case_get_petitioner_counsel(text, doc_nlp)
-        # self.respondent_counsel = case_get_respondent_counsel(text, doc_nlp)
-        # self.judgement = case_get_judgement(self.judgement_text.split(' >>>> ')[-5:]) # increase -3 if judgement is not extracted
+        self.cases_cited = case_get_cases_list(text, doc_nlp)
+        self.provisions_referred = case_get_acts_list(text, doc_nlp)
+        self.petitioner_counsel = case_get_petitioner_counsel(text, doc_nlp)
+        self.respondent_counsel = case_get_respondent_counsel(text, doc_nlp)
+        self.judgement = case_get_judgement(self.judgement_text.split(' >>>> ')[-5:]) # increase -3 if judgement is not extracted
         print("********processed text********") 
 
     def print_case_attributes(self):

@@ -19,10 +19,9 @@ case = CaseDoc()
 missed_cases_count = 0
 scraped_cases_count = 0
 options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
-PATH = r"C:\\Program Files (x86)\\chromedriver.exe"
-#PATH = "/root/chromedriver" ## only uncomment when on server
+# options.add_argument('--headless')
+# options.add_argument('--disable-gpu')
+PATH = "C:/Users/punee/Legal_DDP/chromedriver"
 # driver = webdriver.Chrome(PATH,chrome_options=options) #Uncomment only this line for Headless
 driver = webdriver.Chrome(PATH) #Uncomment only this line for Windowed
 original_years_handle = ''
@@ -266,12 +265,12 @@ def process_IndKanoon_court_years_url(url):
 #     print(court_tag.text)
 #     court_url = court_tag.find_element_by_tag_name("a").get_attribute("href")
 #     process_IndKanoon_court_years_url(court_url)
-court_url = "https://indiankanoon.org/browse/himachal_pradesh/"
-process_IndKanoon_court_years_url(court_url)
+# court_url = "https://indiankanoon.org/browse/himachal_pradesh/"
+# process_IndKanoon_court_years_url(court_url)
 
 # driver.get("https://www.google.com/") #any dummy url
-# case = process_IndKanoon_case_url("https://indiankanoon.org/doc/105912122/")
-# case.print_case_attributes()
+case = process_IndKanoon_case_url("https://indiankanoon.org/doc/17970037/")
+case.print_case_attributes()
 # case = process_IndKanoon_case_url("https://indiankanoon.org/doc/871220/")
 # case.print_case_attributes()
 # case = process_IndKanoon_case_url("https://indiankanoon.org/doc/1902038/")
