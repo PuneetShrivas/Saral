@@ -76,15 +76,15 @@ def chunkstring(string, length):
 
 def pdf_to_text(pages=None):
     text_full = ""
-    pages = convert_from_path('C:/Users/punee/Legal_DDP/Downloads/record.pdf', 500, poppler_path='C:/Program Files (x86)/poppler-0.68.0/bin')
+    pages = convert_from_path('/Users/rohan/Downloads/record.pdf', 500, poppler_path='/opt/homebrew/Cellar/poppler/22.02.0/bin')
     print(pages)
-    pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
+    pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/Cellar/tesseract/5.1.0/bin/tesseract'
     print("Running OCR")
     for page in pages:
         text_small = ""
         print("***new img***")
         page.save('out.jpg', 'JPEG')
-        im = Image.open("C:/Users/punee/Documents/GitHub/Saral/out.jpg")
+        im = Image.open("/Users/rohan/Documents/GitHub/Saral/out.jpg")
         text_small = pytesseract.image_to_string(im, lang = 'hin+eng')
         text_full = text_full + text_small
     return (text_full)
@@ -129,7 +129,7 @@ records = driver.find_elements_by_css_selector('#tblDisplayRecords a')
 for record in records:
     record.click()
     original_table_handle = driver.window_handles[-2]
-    driver.switch_to_window(driver.window_handles[-1])
+    driver.switch_to.window(driver.window_handles[-1])
     time.sleep(2)
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#RptView_ctl06_ctl04_ctl00"))).click()
     download = driver.find_element_by_css_selector("#RptView_ctl06_ctl04_ctl00")
@@ -142,11 +142,11 @@ for record in records:
         download_2.click()
     except:
         pass
-    driver.switch_to_window(original_table_handle)
+    driver.switch_to.window(original_table_handle)
     records_processed = records_processed + 1
     time.sleep(2)
-    Initial_path = r"/Users/rohan/Downloads/"
-    filename = max([Initial_path + "\\" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
+    Initial_path = "/Users/rohan/Downloads"
+    filename = max([Initial_path + "/" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
     shutil.move(filename,os.path.join(Initial_path,r"record.pdf"))
     print("Downloaded")
     text = pdf_to_text()
