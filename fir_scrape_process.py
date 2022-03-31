@@ -64,11 +64,11 @@ class ReportDoc:
 reports_list = []
 
 options = Options()
-prefs = {'download.default_directory' : "C:\\Users\\punee\\Legal_DDP\\Downloads"}
+prefs = {'download.default_directory' : "/Users/rohan/Downloads/"}
 options.add_experimental_option('prefs', prefs)
 # options.add_argument('--headless')
 # options.add_argument('--disable-gpu')
-PATH = "C:/Users/punee/Legal_DDP/chromedriver"
+PATH = "/Users/rohan/Downloads/chromedriver"
 driver = webdriver.Chrome(PATH,chrome_options=options)
 
 def chunkstring(string, length):
@@ -145,7 +145,7 @@ for record in records:
     driver.switch_to_window(original_table_handle)
     records_processed = records_processed + 1
     time.sleep(2)
-    Initial_path = r"C:\\Users\\punee\\Legal_DDP\\Downloads"
+    Initial_path = r"/Users/rohan/Downloads/"
     filename = max([Initial_path + "\\" + f for f in os.listdir(Initial_path)],key=os.path.getctime)
     shutil.move(filename,os.path.join(Initial_path,r"record.pdf"))
     print("Downloaded")
